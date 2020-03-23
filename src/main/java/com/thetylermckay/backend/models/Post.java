@@ -5,31 +5,36 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import java.time.ZonedDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.thetylermckay.backend.views.PostViews;
 
 @Entity
+@JsonView(PostViews.Index.class)
 public class Post {
-	
+
+	@JsonView(PostViews.Show.class)
 	private String contents;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
 	
-	private String imageUrl;
+	private String imagePath;
 	
 	private Boolean isActive;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	private ZonedDateTime  publishedAt;
+	private ZonedDateTime publishedAt;
 	
 	private String slug;
 	
 	private String summary;
 
 	private String title;
+	
+	private ZonedDateTime updatedAt;
 
 	public String getContents() {
 		return contents;
@@ -47,12 +52,12 @@ public class Post {
 		this.id = id;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
+	public String getImagePath() {
+		return imagePath;
 	}
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
 	}
 
 	public Boolean getIsActive() {
@@ -93,5 +98,13 @@ public class Post {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public ZonedDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(ZonedDateTime updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 }
