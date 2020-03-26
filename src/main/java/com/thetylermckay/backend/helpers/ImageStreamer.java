@@ -1,20 +1,20 @@
-package com.thetylermckay.backend.services;
+package com.thetylermckay.backend.helpers;
 
-import com.thetylermckay.backend.helpers.FileHelper;
+import com.thetylermckay.backend.config.ServerProperties;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
-
+@Component
 public class ImageStreamer {
-
-  private HttpServletResponse response;
-
-  public ImageStreamer(HttpServletResponse response) {
-    this.response = response;
-  }
+  
+  @Autowired
+  private ServerProperties serverProperties;
 
   /**
    * Stream an image to the given response.
@@ -23,12 +23,12 @@ public class ImageStreamer {
    * @throws IllegalArgumentException Exception to throw if the image does
    *        not have a valid extension
    */
-  public void streamImage(String imageName) throws IOException, IllegalArgumentException {
-    String imageType = getImageType(imageName);
-    String path = String.format("images/%s", imageName);
-    ClassPathResource imgFile = new ClassPathResource(path);
-    this.response.setContentType(imageType);
-    StreamUtils.copy(imgFile.getInputStream(), this.response.getOutputStream());
+  public void streamImage(String imageName, HttpServletResponse response)
+      throws IOException, IllegalArgumentException {
+    String imagePath = String.format("%s/images/%s", serverProperties.getResourcePath(), imageName);
+    String absPath = (new File(imagePath)).getAbsolutePath();
+    response.setContentType(getImageType(imageName));
+    StreamUtils.copy(new FileInputStream(absPath), response.getOutputStream());
   }
 
   private String getImageType(String imageName) {

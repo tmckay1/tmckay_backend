@@ -15,8 +15,10 @@ public class Post {
   @JsonView(PostViews.Show.class)
   private String contents;
 
+  private ZonedDateTime createdAt;
+
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   private String imagePath;
@@ -39,6 +41,14 @@ public class Post {
 
   public void setContents(String contents) {
     this.contents = contents;
+  }
+
+  public ZonedDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(ZonedDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
   public Integer getId() {
