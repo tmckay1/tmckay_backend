@@ -1,5 +1,6 @@
 package com.thetylermckay.backend.config;
 
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -7,15 +8,15 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "server")
 public class ServerProperties {
 
-  private String[] hosts;
+  private List<String> hosts;
 
   private String resourcePath;
 
-  public String[] getHosts() {
+  public List<String> getHosts() {
     return hosts;
   }
   
-  public void setHosts(String[] hosts) {
+  public void setHosts(List<String> hosts) {
     this.hosts = hosts;
   }
 
