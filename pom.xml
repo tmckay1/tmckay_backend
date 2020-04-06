@@ -83,6 +83,10 @@
 			</artifactId>
 			<version>2.1.0.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
 	</dependencies>
 	
 	<reporting>

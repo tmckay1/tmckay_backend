@@ -1,15 +1,15 @@
 package com.thetylermckay.backend.controllers;
 
 import com.thetylermckay.backend.enums.Role;
+import com.thetylermckay.backend.helpers.RequestHelper;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,6 +21,9 @@ public class SignUpController {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
+
+  @Autowired
+  private HttpServletRequest request;
 
   /**
    * Sign in the user and return a token.
@@ -36,11 +39,16 @@ public class SignUpController {
     user.setPassword(passwordEncoder.encode(password));
     user.setFirstName(firstName);
     user.setLastName(lastName);
+    user.setRole(Role.USER);
+    user.setFailedAttempts(0);
+    user.setIsActive(true);
+    user.setIsVerified(false);
+    user.setLastLoginIp(RequestHelper.getClientIP(request));
     return repository.save(user);
   }
 
-//  @PostMapping("/validateEmail")
-//  Boolean emailExists(@RequestParam String email) {
-//    return repository.existsByEmail(email);
-//  }
+  //  @PostMapping("/validateEmail")
+  //  Boolean emailExists(@RequestParam String email) {
+  //    return repository.existsByEmail(email);
+  //  }
 }

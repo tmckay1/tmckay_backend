@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,30 +19,44 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class User {
 
   @CreationTimestamp
-  private ZonedDateTime createdAt;
+  @Getter @Setter private ZonedDateTime createdAt;
 
   @Column(unique = true, columnDefinition = "varchar(256)")
-  private String email;
+  @Getter @Setter private String email;
+
+  @Column(columnDefinition = "TINYINT default '0'")
+  @Getter @Setter private Integer failedAttempts;
 
   @Column(columnDefinition = "varchar(64)")
-  private String firstName;
+  @Getter @Setter private String firstName;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  @Getter @Setter private Integer id;
+
+  @Column(columnDefinition = "TINYINT default '0'")
+  @Getter @Setter private Boolean isActive;
+
+  @Column(columnDefinition = "TINYINT default '0'")
+
+  // Whether the user has verified who they are.
+  @Getter @Setter private Boolean isVerified;
+
+  @Column(columnDefinition = "varchar(15)")
+  @Getter @Setter private String lastLoginIp;
 
   @Column(columnDefinition = "varchar(64)")
-  private String lastName;
+  @Getter @Setter private String lastName;
 
   @Column(columnDefinition = "varchar(256)")
-  private String password;
+  @Getter @Setter private String password;
 
   @Enumerated(EnumType.STRING)
   @Column(columnDefinition = "varchar(16)")
-  private Role role;
+  @Getter @Setter private Role role;
 
   @UpdateTimestamp
-  private ZonedDateTime updatedAt;
+  @Getter @Setter private ZonedDateTime updatedAt;
 
   /**
    * Before persisting to the database, set default values for some fields.
@@ -52,71 +68,7 @@ public class User {
     }
   }
 
-  public ZonedDateTime getCreatedAt() {
-    return createdAt;
-  }
-
   public String name() {
-    return this.getFirstName() + this.getLastName();
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  public void setCreatedAt(ZonedDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public Integer getId() {
-    return id;
-  }
-
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public Role getRole() {
-    return role;
-  }
-
-  public void setRole(Role role) {
-    this.role = role;
-  }
-
-  public ZonedDateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(ZonedDateTime updatedAt) {
-    this.updatedAt = updatedAt;
+    return this.getFirstName() + " " + this.getLastName();
   }
 }
