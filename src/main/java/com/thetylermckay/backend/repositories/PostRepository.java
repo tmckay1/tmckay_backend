@@ -9,7 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PostRepository extends PagingAndSortingRepository<Post, Integer> {
+public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   Optional<Post> findBySlug(String slug);
 
   @Query("SELECT p FROM Post p WHERE is_active = 1 ORDER BY published_at DESC")

@@ -1,8 +1,10 @@
 package com.thetylermckay.backend.services;
 
+import com.thetylermckay.backend.exceptions.BadCredentialsException;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
 import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,10 +26,13 @@ public class UserService implements UserDetailsService {
   @Autowired
   private UserRepository repository;
 
+  @Autowired
+  private TokenService tokenService;
+
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = repository.findByEmail(username).orElseThrow(() ->
-        new RuntimeException("User not found: " + username));
+        BadCredentialsException.create());
     boolean isEnabled = user.getIsActive();
     boolean isAccountNotExpired = user.getIsVerified();
     boolean isPasswordNotExpired = true;
@@ -58,6 +63,28 @@ public class UserService implements UserDetailsService {
     User user = repository.findByEmail(username).get();
     user.setFailedAttempts(1 + user.getFailedAttempts());
     repository.save(user);
+  }
+  
+  /**
+   * Send a link to the user to reset the user's password.
+   * @param username The username of the user to reset the password for
+   */
+  public void resetPassword(String username) {
+    Optional<User> user = repository.findByEmail(username);
+    if (user.isPresent() && user.get().getIsVerified()) {
+      tokenService.generateResetPasswordToken(user.get());
+    }
+  }
+  
+  /**
+   * Sign Up the given user if it is a valid user.
+   * @param username The username of the user to signup
+   */
+  public void signUp(String username) {
+    Optional<User> user = repository.findByEmail(username);
+    if (user.isPresent() && !user.get().getIsVerified()) {
+      tokenService.generateSignUpToken(user.get());
+    }
   }
 
   /**

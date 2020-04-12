@@ -20,10 +20,14 @@ public class LoginAttemptService {
    * @param e The successful login event
    */
   public void loginSucceeded(AuthenticationSuccessEvent e) {
-    org.springframework.security.core.userdetails.User u =
-        ((org.springframework.security.core.userdetails.User)
-            e.getAuthentication().getPrincipal());
-    String username = u.getUsername();
+    // Sometimes we get a user object, othertimes we get a user name
+    // depends on the path
+    Object principal = e.getAuthentication().getPrincipal();
+    String username = principal.toString();
+    if (!(principal instanceof String)) {
+      username = ((org.springframework.security.core.userdetails.User)
+          e.getAuthentication().getPrincipal()).getUsername();
+    }
 
     // For some reason this event triggers twice, once with the actual
     // username and another time with the client id.
@@ -39,6 +43,8 @@ public class LoginAttemptService {
    */
   public void loginFailed(AuthenticationFailureBadCredentialsEvent e) {
     String username = (String) e.getAuthentication().getPrincipal();
-    userService.loginFailed(username);
+    if (!username.equals("access-token")) {
+      userService.loginFailed(username);
+    }
   }
 }

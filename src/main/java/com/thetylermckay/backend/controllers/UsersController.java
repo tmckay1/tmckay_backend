@@ -94,7 +94,7 @@ class UsersController {
 
   @DeleteMapping("/{id}")
   @PreAuthorize("!hasAuthority('USER')")
-  void delete(@PathVariable Integer id) {
+  void delete(@PathVariable Long id) {
     if (repository.existsById(id)) {
       repository.deleteById(id);
     } else {
@@ -106,7 +106,7 @@ class UsersController {
   @PreAuthorize("!hasAuthority('USER') || (#oldPassword != null && !#oldPassword.isEmpty() &&"
       + "authentication.principal == @userRepository.findById(#id).orElse("
       + "new net.reliqs.gleeometer.users.User()).email)")
-  void changePassword(@PathVariable Integer id,
+  void changePassword(@PathVariable Long id,
       @RequestParam(required = false) String oldPassword,
       @Valid @Size(min = 3) @RequestParam String newPassword) {
     User user = repository.findById(id).orElseThrow(() -> new EntityNotFoundException());
