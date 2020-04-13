@@ -12,6 +12,7 @@ import com.thetylermckay.backend.views.UserVerificationViews;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(path = "/api/auth")
 public class AuthenticationController {
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Autowired
   private UserService service;
@@ -39,13 +43,13 @@ public class AuthenticationController {
 
   /**
    * Change the password for the given user.
-   * @param password User's password
+   * @param password User's passwordpasswordEncoder
    * @param token Reset password token for this user
    */
   @PostMapping(path = "/change_password")
   @ResponseBody
   public void changePassword(@RequestParam String password, @RequestParam String token) {
-    service.changePassword(password, token);
+    service.changePassword(password, token, passwordEncoder);
   }
 
   /**

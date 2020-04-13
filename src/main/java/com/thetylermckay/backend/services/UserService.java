@@ -1,6 +1,7 @@
 package com.thetylermckay.backend.services;
 
 import com.thetylermckay.backend.exceptions.BadCredentialsException;
+import com.thetylermckay.backend.exceptions.UserUnverifiedException;
 import com.thetylermckay.backend.models.Token;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +37,13 @@ public class UserService implements UserDetailsService {
    * @param password The new password
    * @param token The token used to reset this password
    */
-  public void changePassword(String password, String token) {
+  public void changePassword(String password, String token, PasswordEncoder passwordEncoder) {
     Token t = tokenService.verifyToken(token);
     User user = t.getUser();
-    user.setPassword(password);
+    if (!user.getIsVerified()) {
+      throw new UserUnverifiedException();
+    }
+    user.setPassword(passwordEncoder.encode(password));
     repository.save(user);
     tokenService.invalidateToken(t);
   }
