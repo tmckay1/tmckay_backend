@@ -1,6 +1,7 @@
 package com.thetylermckay.backend.services;
 
 import com.thetylermckay.backend.exceptions.BadCredentialsException;
+import com.thetylermckay.backend.models.Token;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
 import java.util.Arrays;
@@ -29,6 +30,19 @@ public class UserService implements UserDetailsService {
   @Autowired
   private TokenService tokenService;
 
+  /**
+   * Change the password for the given user and invalidate the token.
+   * @param password The new password
+   * @param token The token used to reset this password
+   */
+  public void changePassword(String password, String token) {
+    Token t = tokenService.verifyToken(token);
+    User user = t.getUser();
+    user.setPassword(password);
+    repository.save(user);
+    tokenService.invalidateToken(t);
+  }
+
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = repository.findByEmail(username).orElseThrow(() ->
@@ -56,7 +70,7 @@ public class UserService implements UserDetailsService {
   }
   
   /**
-   * Increment the failed attempts when a user fails to login.
+   * Increment the failed login attempts when a user fails to login.
    * @param username The username of the user that failed to login
    */
   public void loginFailed(String username) {
@@ -98,5 +112,24 @@ public class UserService implements UserDetailsService {
           e.getAuthentication().getDetails();
       user.setLastLoginIp(details.getRemoteAddress());
     }
+  }
+  
+  /**
+   * Increment the failed verification attempts when a user fails to verify.
+   * @param user The user that failed to verify
+   */
+  public void verificationFailed(User user) {
+    user.setFailedVerificationAttempts(1 + user.getFailedVerificationAttempts());
+    repository.save(user);
+  }
+  
+  /**
+   * Mark the user verified, and reset his or her verification attempts.
+   * @param user User to verify
+   */
+  public void verifyUser(User user) {
+    user.setFailedVerificationAttempts(0);
+    user.setIsVerified(true);
+    repository.save(user);
   }
 }

@@ -1,9 +1,13 @@
 package com.thetylermckay.backend.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thetylermckay.backend.models.UserVerification;
 import com.thetylermckay.backend.services.TokenService;
 import com.thetylermckay.backend.services.UserService;
+import com.thetylermckay.backend.services.UserVerificationService;
 import com.thetylermckay.backend.views.UserVerificationViews;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +32,21 @@ public class AuthenticationController {
   private TokenService tokenService;
 
   @Autowired
+  private UserVerificationService verificationService;
+
+  @Autowired
   private TokenStore tokenStore;
+
+  /**
+   * Change the password for the given user.
+   * @param password User's password
+   * @param token Reset password token for this user
+   */
+  @PostMapping(path = "/change_password")
+  @ResponseBody
+  public void changePassword(@RequestParam String password, @RequestParam String token) {
+    service.changePassword(password, token);
+  }
 
   /**
    * Send an email to reset the user's password.
@@ -68,14 +86,16 @@ public class AuthenticationController {
 
   /**
    * Verify the questions have been answered correctly.
-   * @param questions The answers to the questions in the verification form
+   * @param answers The answers to the questions in the verification form
+   * @return Token to reset password
    */
+  @SuppressWarnings("unchecked")
   @PostMapping(path = "/verify")
   @ResponseBody
-  public void verify(@RequestParam Map<String, String> questions, @RequestParam String token) {
-    System.out.println("QUESTIONS");
-    System.out.println(questions);
-    System.out.println(token);
+  public String verify(@RequestParam String answers, @RequestParam String token)
+      throws JsonMappingException, JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    return verificationService.verifyUser(mapper.readValue(answers, Map.class), token);
   }
 
   /**

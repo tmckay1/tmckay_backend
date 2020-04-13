@@ -29,6 +29,9 @@ public class User {
   @Column(columnDefinition = "TINYINT default '0'")
   @Getter @Setter private Integer failedAttempts;
 
+  @Column(columnDefinition = "TINYINT default '0'")
+  @Getter @Setter private Integer failedVerificationAttempts;
+
   @Column(columnDefinition = "varchar(64)")
   @Getter @Setter private String firstName;
 

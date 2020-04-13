@@ -68,12 +68,31 @@ public class TokenService {
    * @return Questions
    */
   public Iterable<UserVerification> getVerificationQuestions(String token) {
+    Token t = verifyToken(token);
+    return t.getUser().getUserVerifications();
+  }
+  
+  /**
+   * Invalidate the token, so it can no longer be used.
+   * @param t Token to invalidate
+   */
+  public void invalidateToken(Token t) {
+    t.setActive(false);
+    repository.save(t);
+  }
+  
+  /**
+   * Verify the token is valid.
+   * @param token The token string to lookup
+   * @return The token object
+   * @throws StaleTokenException If the token is invalid
+   */
+  public Token verifyToken(String token) throws StaleTokenException {
     Optional<Token> t = repository.findByToken(token);
     if (!t.isPresent() || !t.get().isActive()
         || t.get().getExpiresAt().compareTo(ZonedDateTime.now()) < 0) {
       throw new StaleTokenException();
     }
-    
-    return t.get().getUser().getUserVerifications();
+    return t.get();
   }
 }
