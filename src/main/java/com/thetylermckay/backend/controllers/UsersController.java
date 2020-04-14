@@ -1,5 +1,6 @@
 package com.thetylermckay.backend.controllers;
 
+import com.thetylermckay.backend.config.JwtProperties;
 import com.thetylermckay.backend.exceptions.EntityNotFoundException;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
@@ -14,7 +15,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,16 +40,24 @@ class UsersController {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
+  
+  @Autowired
+  private ClientDetailsServiceConfigurer clients;
+  
+  @Autowired
+  private JwtProperties jwtProperties;
 
   @GetMapping
-  Page<User> all(@PageableDefault(size = Integer.MAX_VALUE) Pageable pageable,
+  @ResponseBody
+  JwtProperties all(@PageableDefault(size = Integer.MAX_VALUE) Pageable pageable,
       OAuth2Authentication authentication) {
     //    String auth = (String) authentication.getUserAuthentication().getPrincipal();
     //    String role = authentication.getAuthorities().iterator().next().getAuthority();
     //       if (role.equals(User.Role.USER.name())) {
     //           return repository.findAllByEmail(auth, pageable);
     //       }
-    return repository.findAll(pageable);
+//    return repository.findAll(pageable);
+    return jwtProperties;
   }
 
   //   @GetMapping("/search")

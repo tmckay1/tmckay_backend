@@ -13,7 +13,7 @@ public class JwtProperties {
 
   @Getter @Setter private String clientSecret;
 
-  @Getter @Setter private String jwtSigningKey;
+  @Getter @Setter private String signingKey;
 
   @Getter @Setter private int accessTokenValiditySeconds;
 
