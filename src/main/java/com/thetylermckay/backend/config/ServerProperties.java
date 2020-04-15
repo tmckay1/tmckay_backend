@@ -1,6 +1,8 @@
 package com.thetylermckay.backend.config;
 
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -8,23 +10,9 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "server")
 public class ServerProperties {
 
-  private List<String> hosts;
+  @Getter @Setter private String host;
 
-  private String resourcePath;
+  @Getter @Setter private List<String> hosts;
 
-  public List<String> getHosts() {
-    return hosts;
-  }
-  
-  public void setHosts(List<String> hosts) {
-    this.hosts = hosts;
-  }
-
-  public String getResourcePath() {
-    return this.resourcePath;
-  }
-  
-  public void setResourcePath(String resourcePath) {
-    this.resourcePath = resourcePath;
-  }
+  @Getter @Setter private String resourcePath;
 }

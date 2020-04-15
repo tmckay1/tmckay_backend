@@ -2,6 +2,8 @@ package com.thetylermckay.backend.services;
 
 import com.thetylermckay.backend.exceptions.BadCredentialsException;
 import com.thetylermckay.backend.exceptions.UserUnverifiedException;
+import com.thetylermckay.backend.mailers.ResetPasswordMailer;
+import com.thetylermckay.backend.mailers.SignUpMailer;
 import com.thetylermckay.backend.models.Token;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
@@ -28,6 +30,12 @@ public class UserService implements UserDetailsService {
 
   @Autowired
   private UserRepository repository;
+
+  @Autowired
+  private ResetPasswordMailer resetPasswordMailer;
+
+  @Autowired
+  private SignUpMailer signUpMailer;
 
   @Autowired
   private TokenService tokenService;
@@ -91,7 +99,8 @@ public class UserService implements UserDetailsService {
   public void resetPassword(String username) {
     Optional<User> user = repository.findByEmail(username);
     if (user.isPresent() && user.get().getIsVerified()) {
-      tokenService.generateResetPasswordToken(user.get());
+      String token = tokenService.generateResetPasswordToken(user.get());
+      resetPasswordMailer.sendResetPasswordEmail(user.get(), token);
     }
   }
   
@@ -102,7 +111,8 @@ public class UserService implements UserDetailsService {
   public void signUp(String username) {
     Optional<User> user = repository.findByEmail(username);
     if (user.isPresent() && !user.get().getIsVerified()) {
-      tokenService.generateSignUpToken(user.get());
+      String token = tokenService.generateSignUpToken(user.get());
+      signUpMailer.sendSignUpEmail(user.get(), token);
     }
   }
 

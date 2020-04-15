@@ -23,7 +23,7 @@ public class Token {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Getter @Setter private Integer id;
+  @Getter @Setter private Long id;
 
   @Column(columnDefinition = "TINYINT default '1'")
   @Getter @Setter private boolean isActive;

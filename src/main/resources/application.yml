@@ -15,6 +15,7 @@ logging:
     com.thetylermckay.backend: DEBUG
 
 server:
+  host: http://localhost:3000
   hosts:
     - http://localhost:3000
     - http://10.0.0.14:3000  resource_path: src/main/resources
@@ -24,6 +25,19 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/oms
     username: tmckay
     password: tM031293
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tmckay1.jackson@gmail.com
+    password: vlvxpwmegczscbku
+    properties:      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true
 
   jpa:
     hibernate:
