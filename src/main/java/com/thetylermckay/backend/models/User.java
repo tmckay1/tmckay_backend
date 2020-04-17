@@ -1,17 +1,17 @@
 package com.thetylermckay.backend.models;
 
-import com.thetylermckay.backend.enums.Role;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -55,10 +55,15 @@ public class User {
 
   @Column(columnDefinition = "varchar(256)")
   @Getter @Setter private String password;
-
-  @Enumerated(EnumType.STRING)
-  @Column(columnDefinition = "varchar(16)")
-  @Getter @Setter private Role role;
+  
+  @ManyToMany
+  @JoinTable(
+      name = "user_roles", 
+      joinColumns = @JoinColumn(
+        name = "user_id", referencedColumnName = "id"), 
+      inverseJoinColumns = @JoinColumn(
+        name = "role_id", referencedColumnName = "id")) 
+  @Getter @Setter private Collection<Role> roles;
   
   @OneToMany(mappedBy = "user")
   @Getter @Setter private Set<Token> tokens;
@@ -72,12 +77,12 @@ public class User {
   /**
    * Before persisting to the database, set default values for some fields.
    */
-  @PrePersist
-  public void prePersist() {
-    if (role == null) {
-      role = Role.USER;
-    }
-  }
+  // @PrePersist
+  // public void prePersist() {
+  //   if (role == null) {
+  //     role = Role.USER;
+  //   }
+  // }
 
   public String name() {
     return this.getFirstName() + " " + this.getLastName();

@@ -1,6 +1,7 @@
 package com.thetylermckay.backend.mailers;
 
 import com.thetylermckay.backend.config.ServerProperties;
+import com.thetylermckay.backend.exceptions.FailedMailerException;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class ResetPasswordMailer {
     try {
       emailService.sendHtmlMessage(user.getEmail(), subject, body);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new FailedMailerException();
     }
   }
   

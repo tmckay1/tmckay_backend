@@ -4,11 +4,18 @@ import com.thetylermckay.backend.exceptions.BadCredentialsException;
 import com.thetylermckay.backend.exceptions.UserUnverifiedException;
 import com.thetylermckay.backend.mailers.ResetPasswordMailer;
 import com.thetylermckay.backend.mailers.SignUpMailer;
+import com.thetylermckay.backend.models.Privilege;
+import com.thetylermckay.backend.models.Role;
 import com.thetylermckay.backend.models.Token;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -57,6 +65,7 @@ public class UserService implements UserDetailsService {
   }
 
   @Override
+  @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = repository.findByEmail(username).orElseThrow(() ->
         BadCredentialsException.create());
@@ -64,10 +73,34 @@ public class UserService implements UserDetailsService {
     boolean isAccountNotExpired = user.getIsVerified();
     boolean isPasswordNotExpired = true;
     boolean isAccountNotLocked = user.getFailedAttempts() < maxLoginAttempts;
-    GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
     return new org.springframework.security.core.userdetails.User(
         user.getEmail(), user.getPassword(), isEnabled, isAccountNotExpired,
-        isPasswordNotExpired, isAccountNotLocked, Arrays.asList(authority));
+        isPasswordNotExpired, isAccountNotLocked, getAuthorities(user.getRoles()));
+  }
+  
+  private Collection<? extends GrantedAuthority> getAuthorities(
+      Collection<Role> roles) {
+    return getGrantedAuthorities(getPrivileges(roles));
+  }
+
+  private List<String> getPrivileges(Collection<Role> roles) {
+    List<String> privileges = new ArrayList<>();
+    List<Privilege> collection = new ArrayList<>();
+    for (Role role : roles) {
+      collection.addAll(role.getPrivileges());
+    }
+    for (Privilege item : collection) {
+      privileges.add(item.getName());
+    }
+    return privileges;
+  }
+
+  private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    for (String privilege : privileges) {
+      authorities.add(new SimpleGrantedAuthority(privilege));
+    }
+    return authorities;
   }
   
   /**

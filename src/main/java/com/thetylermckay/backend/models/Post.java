@@ -2,15 +2,13 @@ package com.thetylermckay.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.thetylermckay.backend.views.PostViews;
-
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.ZonedDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @JsonView(PostViews.Index.class)

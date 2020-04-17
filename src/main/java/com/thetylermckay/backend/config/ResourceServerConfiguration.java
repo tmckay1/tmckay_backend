@@ -1,6 +1,5 @@
 package com.thetylermckay.backend.config;
 
-import com.thetylermckay.backend.enums.Role;
 import com.thetylermckay.backend.exceptions.CustomAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +31,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
   public void configure(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable().authorizeRequests()
         .antMatchers("/posts/**", "/images/**", "/oauth/token", "/api/auth/**").permitAll()
-        .antMatchers("/api/users/**").hasAuthority(Role.ADMIN.name())
+        .antMatchers("/api/users/**").hasAuthority("Admin")
         .antMatchers("/api/**", "/api/auth/revoke_token").authenticated()
         .anyRequest().authenticated()
         .and().exceptionHandling()
