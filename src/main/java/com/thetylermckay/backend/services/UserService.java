@@ -9,10 +9,12 @@ import com.thetylermckay.backend.models.Role;
 import com.thetylermckay.backend.models.Token;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
@@ -104,6 +107,27 @@ public class UserService implements UserDetailsService {
       authorities.add(new SimpleGrantedAuthority(privilege));
     }
     return authorities;
+  }
+  
+  /**
+   * Get the user object from the request.
+   * @param request The current request
+   * @return User if it exists
+   */
+  public Optional<User> getUserFromRequest(HttpServletRequest request) {
+    Principal principal = request.getUserPrincipal();
+    String email = principal.getName();
+    return repository.findByEmail(email);
+  }
+  
+  /**
+   * Get the user object from the request.
+   * @param authentication The user authentication object
+   * @return User if it exists
+   */
+  public Optional<User> getUserFromAuthentication(OAuth2Authentication  authentication) {
+    String email = authentication.getName();
+    return repository.findByEmail(email);
   }
   
   /**
