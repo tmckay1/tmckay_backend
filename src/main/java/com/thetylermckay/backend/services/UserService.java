@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +25,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -62,6 +60,11 @@ public class UserService implements UserDetailsService {
     user.setPassword(passwordEncoder.encode(password));
     repository.save(user);
     tokenService.invalidateToken(t);
+  }
+
+  public List<User> findAllUsers(int pageNumber, int pageLength) {
+    PageRequest page = PageRequest.of(pageNumber, pageLength);
+    return repository.findAll(page).toList();
   }
 
   @Override

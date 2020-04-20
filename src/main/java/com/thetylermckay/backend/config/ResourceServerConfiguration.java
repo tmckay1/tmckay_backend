@@ -31,7 +31,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
   public void configure(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable().authorizeRequests()
         .antMatchers("/posts/**", "/images/**", "/oauth/token", "/api/auth/**").permitAll()
-        .antMatchers("/api/users/**").hasAuthority("Admin")
+        .antMatchers("/api/users/**").hasAnyAuthority("USER", "ADMIN")
         .antMatchers("/api/**", "/api/auth/revoke_token").authenticated()
         .anyRequest().authenticated()
         .and().exceptionHandling()

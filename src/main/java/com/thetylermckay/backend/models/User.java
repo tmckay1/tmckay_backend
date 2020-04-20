@@ -1,8 +1,12 @@
 package com.thetylermckay.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.thetylermckay.backend.views.UserViews;
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,9 +25,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class User {
 
   @CreationTimestamp
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private ZonedDateTime createdAt;
 
   @Column(unique = true, columnDefinition = "varchar(256)")
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private String email;
 
   @Column(columnDefinition = "TINYINT default '0'")
@@ -37,14 +43,19 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private Long id;
 
+  @JsonView(UserViews.Index.class)
+  @Getter @Setter private String imagePath;
+
   @Column(columnDefinition = "TINYINT default '0'")
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private Boolean isActive;
 
-  @Column(columnDefinition = "TINYINT default '0'")
-
   // Whether the user has verified who they are.
+  @Column(columnDefinition = "TINYINT default '0'")
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private Boolean isVerified;
 
   @Column(columnDefinition = "varchar(15)")
@@ -74,17 +85,14 @@ public class User {
   @OneToMany(mappedBy = "user")
   @Getter @Setter private Set<UserVerification> userVerifications;
 
-  /**
-   * Before persisting to the database, set default values for some fields.
-   */
-  // @PrePersist
-  // public void prePersist() {
-  //   if (role == null) {
-  //     role = Role.USER;
-  //   }
-  // }
-
+  @JsonView(UserViews.Index.class)
   public String name() {
     return this.getFirstName() + " " + this.getLastName();
+  }
+
+  @JsonView(UserViews.Index.class)
+  public String userRoles() {
+    List<String> roleList = roles.stream().map(r -> r.getName()).collect(Collectors.toList());
+    return String.join(", ", roleList);
   }
 }

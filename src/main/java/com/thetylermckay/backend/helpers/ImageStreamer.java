@@ -32,7 +32,7 @@ public class ImageStreamer {
   }
 
   private String getImageType(String imageName) {
-    String extension = FileHelper.getFileExtension(imageName);
+    String extension = FileHelper.getFileExtension(imageName).toLowerCase();
 
     switch (extension) {
       case "jpg":

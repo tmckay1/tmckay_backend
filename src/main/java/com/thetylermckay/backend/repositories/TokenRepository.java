@@ -18,4 +18,6 @@ public interface TokenRepository extends CrudRepository<Token, Long> {
   @Modifying
   @Query("UPDATE Token t SET t.isActive = false WHERE t.user = :user")
   void deactivateTokens(@Param("user") User user);
+  
+  Token findTopByOrderByIdDesc();
 }

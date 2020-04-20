@@ -1,15 +1,24 @@
 package com.thetylermckay.backend.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.thetylermckay.backend.config.JwtProperties;
 import com.thetylermckay.backend.exceptions.EntityNotFoundException;
+import com.thetylermckay.backend.models.Post;
+import com.thetylermckay.backend.models.Token;
 import com.thetylermckay.backend.models.User;
+import com.thetylermckay.backend.repositories.TokenRepository;
 import com.thetylermckay.backend.repositories.UserRepository;
+import com.thetylermckay.backend.services.UserService;
+import com.thetylermckay.backend.views.PostViews;
+import com.thetylermckay.backend.views.UserViews;
+
 import java.util.HashSet;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -40,24 +49,16 @@ class UsersController {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
-  
-  @Autowired
-  private ClientDetailsServiceConfigurer clients;
-  
-  @Autowired
-  private JwtProperties jwtProperties;
 
-  @GetMapping
-  @ResponseBody
-  JwtProperties all(@PageableDefault(size = Integer.MAX_VALUE) Pageable pageable,
-      OAuth2Authentication authentication) {
-    //    String auth = (String) authentication.getUserAuthentication().getPrincipal();
-    //    String role = authentication.getAuthorities().iterator().next().getAuthority();
-    //       if (role.equals(User.Role.USER.name())) {
-    //           return repository.findAllByEmail(auth, pageable);
-    //       }
-//    return repository.findAll(pageable);
-    return jwtProperties;
+  @Autowired
+  private UserService service;
+
+  @GetMapping(path = "/")
+  @JsonView(UserViews.Index.class)
+  public @ResponseBody Iterable<User> 
+  index(@RequestParam(required = true, defaultValue = "0") Integer pageNumber, 
+          @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
+    return service.findAllUsers(pageNumber, pageSize);
   }
 
   //   @GetMapping("/search")
