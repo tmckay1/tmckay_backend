@@ -39,6 +39,7 @@ public class User {
   @Getter @Setter private Integer failedVerificationAttempts;
 
   @Column(columnDefinition = "varchar(64)")
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private String firstName;
 
   @Id
@@ -62,6 +63,7 @@ public class User {
   @Getter @Setter private String lastLoginIp;
 
   @Column(columnDefinition = "varchar(64)")
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private String lastName;
 
   @Column(columnDefinition = "varchar(256)")
@@ -73,7 +75,7 @@ public class User {
       joinColumns = @JoinColumn(
         name = "user_id", referencedColumnName = "id"), 
       inverseJoinColumns = @JoinColumn(
-        name = "role_id", referencedColumnName = "id")) 
+        name = "role_id", referencedColumnName = "id"))
   @Getter @Setter private Collection<Role> roles;
   
   @OneToMany(mappedBy = "user")
@@ -91,8 +93,12 @@ public class User {
   }
 
   @JsonView(UserViews.Index.class)
-  public String userRoles() {
-    List<String> roleList = roles.stream().map(r -> r.getName()).collect(Collectors.toList());
-    return String.join(", ", roleList);
+  public List<String> userRoles() {
+    return roles.stream().map(r -> r.getName()).collect(Collectors.toList());
+  }
+
+  @JsonView(UserViews.Index.class)
+  public List<Long> roleIds() {
+    return roles.stream().map(r -> r.getId()).collect(Collectors.toList());
   }
 }
