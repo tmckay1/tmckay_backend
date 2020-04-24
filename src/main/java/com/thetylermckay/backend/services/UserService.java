@@ -37,6 +37,11 @@ public class UserService implements UserDetailsService {
    * Max number of times a user is allowed to attempt logging in.
    */
   public final int maxLoginAttempts = 8;
+  
+  /**
+   * The default password for newly created users.
+   */
+  public final String defaultPassword = "ILOVEANGE!";
 
   @Autowired
   private UserRepository repository;
@@ -57,6 +62,7 @@ public class UserService implements UserDetailsService {
    * Change the password for the given user and invalidate the token.
    * @param password The new password
    * @param token The token used to reset this password
+   * @param passwordEncoder PasswordEncoder used to hash password
    */
   public void changePassword(String password, String token, PasswordEncoder passwordEncoder) {
     Token t = tokenService.verifyToken(token);
@@ -67,6 +73,37 @@ public class UserService implements UserDetailsService {
     user.setPassword(passwordEncoder.encode(password));
     repository.save(user);
     tokenService.invalidateToken(t);
+  }
+  
+  /**
+   * Create the given user with the following attributes.
+   * @param passwordEncoder PasswordEncoder used to hash password
+   * @param firstName First name of user
+   * @param lastName Last name of user
+   * @param email Email of user
+   * @param isActive Whether the user is active or not
+   * @param roleIds The ids of the roles for this user
+   * @param imagePath Name of the profile image to use if present
+   */
+  @Transactional
+  public void createUser(PasswordEncoder passwordEncoder, String firstName, String lastName,
+      String email, boolean isActive, List<Long> roleIds, String imagePath) {
+    List<Role> roles = roleService.findAllRolesByIds(roleIds);
+    User u = new User();
+    u.setFirstName(firstName);
+    u.setLastName(lastName);
+    u.setEmail(email);
+    u.setIsActive(isActive);
+    u.setRoles(roles);
+    u.setFailedAttempts(0);
+    u.setFailedVerificationAttempts(0);
+    u.setIsVerified(false);
+    u.setPassword(passwordEncoder.encode(defaultPassword));
+    if (imagePath != null) {
+      u.setImagePath(imagePath);
+    }
+
+    repository.save(u);
   }
 
   public List<User> findAllUsers(int pageNumber, int pageLength) {

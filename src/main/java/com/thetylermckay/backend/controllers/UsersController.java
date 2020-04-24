@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users")
 @Validated
 class UsersController {
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
   
   @Autowired
   private ImageStreamer streamer;
@@ -37,20 +41,50 @@ class UsersController {
   @Autowired
   private UserService service;
 
-  @GetMapping(path = "/")
-  @JsonView(UserViews.Index.class)
-  public @ResponseBody Iterable<User> 
-  index(@RequestParam(required = true, defaultValue = "0") Integer pageNumber, 
-          @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
-    return service.findAllUsers(pageNumber, pageSize);
-  }
-
   @GetMapping(path = "/autocomplete")
   @JsonView(RoleViews.Index.class)
   public @ResponseBody Map<String, Object> autocomplete() {
     Map<String, Object> map = new HashMap<>();
     map.put("roles", roleService.findAllRoles());
     return map;
+  }
+
+  @RequestMapping(value = "/", params = "profile_image", method = RequestMethod.POST)
+  @ResponseBody
+  public void create(@RequestParam(required = true) String firstName,
+      @RequestParam(required = true) String lastName,
+      @RequestParam(required = true) String email,
+      @RequestParam(required = true) Boolean isActive,
+      @RequestParam(required = true) List<Long> roleIds,
+      @RequestParam("profile_image") MultipartFile profileImage) {
+    String imageName = null;
+    if (!profileImage.isEmpty()) {
+      try {
+        imageName = "/" + streamer.uploadImage(profileImage);
+      } catch (IOException e) {
+        throw new FileUploadException();
+      }
+    }
+    
+    service.createUser(passwordEncoder, firstName, lastName, email, isActive, roleIds, imageName);
+  }
+
+  @RequestMapping(value = "/", params = "!profile_image", method = RequestMethod.POST)
+  @ResponseBody
+  public void create(@RequestParam(required = true) String firstName,
+      @RequestParam(required = true) String lastName,
+      @RequestParam(required = true) String email,
+      @RequestParam(required = true) Boolean isActive,
+      @RequestParam(required = true) List<Long> roleIds) {
+    service.createUser(passwordEncoder, firstName, lastName, email, isActive, roleIds, null);
+  }
+
+  @GetMapping(path = "/")
+  @JsonView(UserViews.Index.class)
+  public @ResponseBody Iterable<User> 
+  index(@RequestParam(required = true, defaultValue = "0") Integer pageNumber, 
+          @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
+    return service.findAllUsers(pageNumber, pageSize);
   }
 
   @RequestMapping(value = "/{id}", params = "profile_image", method = RequestMethod.PUT)
