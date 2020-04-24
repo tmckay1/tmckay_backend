@@ -1,6 +1,7 @@
 package com.thetylermckay.backend.services;
 
 import com.thetylermckay.backend.exceptions.BadCredentialsException;
+import com.thetylermckay.backend.exceptions.EntityNotFoundException;
 import com.thetylermckay.backend.exceptions.UserUnverifiedException;
 import com.thetylermckay.backend.mailers.ResetPasswordMailer;
 import com.thetylermckay.backend.mailers.SignUpMailer;
@@ -42,6 +43,9 @@ public class UserService implements UserDetailsService {
 
   @Autowired
   private ResetPasswordMailer resetPasswordMailer;
+
+  @Autowired
+  private RoleService roleService;
 
   @Autowired
   private SignUpMailer signUpMailer;
@@ -187,6 +191,38 @@ public class UserService implements UserDetailsService {
           e.getAuthentication().getDetails();
       user.setLastLoginIp(details.getRemoteAddress());
     }
+  }
+  
+  /**
+   * Update the given user with the following attributes.
+   * @param id User id
+   * @param firstName First name of user
+   * @param lastName Last name of user
+   * @param email Email of user
+   * @param isActive Whether the user is active or not
+   * @param roleIds The ids of the roles for this user
+   * @param imagePath Name of the profile image to use if present
+   */
+  @Transactional
+  public void updateUser(Long id, String firstName, String lastName,
+      String email, boolean isActive, List<Long> roleIds, String imagePath) {
+    Optional<User> user = repository.findById(id);
+    if (!user.isPresent()) {
+      throw new EntityNotFoundException();
+    }
+
+    List<Role> roles = roleService.findAllRolesByIds(roleIds);
+    User u = user.get();
+    u.setFirstName(firstName);
+    u.setLastName(lastName);
+    u.setEmail(email);
+    u.setIsActive(isActive);
+    u.setRoles(roles);
+    if (imagePath != null) {
+      u.setImagePath(imagePath);
+    }
+
+    repository.save(u);
   }
   
   /**

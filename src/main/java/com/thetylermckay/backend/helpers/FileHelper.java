@@ -1,5 +1,8 @@
 package com.thetylermckay.backend.helpers;
 
+import java.io.File;
+import org.apache.commons.io.FilenameUtils;
+
 public class FileHelper {
   /**
    * Get the file extension for the given name.
@@ -12,5 +15,13 @@ public class FileHelper {
     int p = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
 
     return (i > p) ? fileName.substring(i + 1).toLowerCase() : "";
+  }
+
+  public static String getFileBaseName(String fileName) {
+    return FilenameUtils.getBaseName(fileName);
+  }
+  
+  public static boolean fileExists(String filePath) {
+    return (new File(filePath)).exists();
   }
 }
