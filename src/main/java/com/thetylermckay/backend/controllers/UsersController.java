@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -77,6 +78,12 @@ class UsersController {
       @RequestParam(required = true) Boolean isActive,
       @RequestParam(required = true) List<Long> roleIds) {
     service.createUser(passwordEncoder, firstName, lastName, email, isActive, roleIds, null);
+  }
+
+  @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+  @ResponseBody
+  public void delete(@PathVariable Long id, HttpServletRequest request) {
+    service.deleteUser(id, request);
   }
 
   @GetMapping(path = "/")

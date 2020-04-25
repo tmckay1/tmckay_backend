@@ -1,6 +1,7 @@
 package com.thetylermckay.backend.services;
 
 import com.thetylermckay.backend.exceptions.BadCredentialsException;
+import com.thetylermckay.backend.exceptions.CannotModifySelfException;
 import com.thetylermckay.backend.exceptions.EntityNotFoundException;
 import com.thetylermckay.backend.exceptions.UserUnverifiedException;
 import com.thetylermckay.backend.mailers.ResetPasswordMailer;
@@ -104,6 +105,23 @@ public class UserService implements UserDetailsService {
     }
 
     repository.save(u);
+  }
+  
+  /**
+   * Delete the user with the given id.
+   * @param id The id of the user to delete
+   */
+  public void deleteUser(Long id, HttpServletRequest request) {
+    Optional<User> user = repository.findById(id);
+    if (!user.isPresent()) {
+      throw new EntityNotFoundException();
+    }
+
+    Optional<User> currentUser = getUserFromRequest(request);
+    if (!currentUser.isPresent() || currentUser.get().getId() == id) {
+      throw new CannotModifySelfException();
+    }
+    repository.delete(user.get());
   }
 
   public List<User> findAllUsers(int pageNumber, int pageLength) {
