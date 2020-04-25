@@ -70,16 +70,6 @@ class UsersController {
     service.createUser(passwordEncoder, firstName, lastName, email, isActive, roleIds, imageName);
   }
 
-  @RequestMapping(value = "/", params = "!profile_image", method = RequestMethod.POST)
-  @ResponseBody
-  public void create(@RequestParam(required = true) String firstName,
-      @RequestParam(required = true) String lastName,
-      @RequestParam(required = true) String email,
-      @RequestParam(required = true) Boolean isActive,
-      @RequestParam(required = true) List<Long> roleIds) {
-    service.createUser(passwordEncoder, firstName, lastName, email, isActive, roleIds, null);
-  }
-
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
   @ResponseBody
   public void delete(@PathVariable Long id, HttpServletRequest request) {
