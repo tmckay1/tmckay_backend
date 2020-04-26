@@ -2,6 +2,7 @@ package com.thetylermckay.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.thetylermckay.backend.views.UserVerificationViews;
+import com.thetylermckay.backend.views.UserViews;
 import java.time.ZonedDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,10 +31,11 @@ public class UserVerification {
   @Getter @Setter private ZonedDateTime updatedAt;
 
   @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
+  @JoinColumn(name = "user_id")
   @Getter @Setter private User user;
 
   @Column(columnDefinition = "varchar(40)")
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private String verificationAnswer;
 
   @JsonView(UserVerificationViews.Index.class)

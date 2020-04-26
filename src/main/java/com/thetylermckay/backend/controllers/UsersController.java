@@ -7,7 +7,7 @@ import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.services.RoleService;
 import com.thetylermckay.backend.services.UserService;
 import com.thetylermckay.backend.views.RoleViews;
-import com.thetylermckay.backend.views.UserViews;
+import com.thetylermckay.backend.views.UserVerificationViews;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -57,17 +57,41 @@ class UsersController {
       @RequestParam(required = true) String email,
       @RequestParam(required = true) Boolean isActive,
       @RequestParam(required = true) List<Long> roleIds,
+      @RequestParam(required = true) Map<String, String> userAttributes,
       @RequestParam("profile_image") MultipartFile profileImage) {
     String imageName = null;
-    if (!profileImage.isEmpty()) {
-      try {
-        imageName = "/" + streamer.uploadImage(profileImage);
-      } catch (IOException e) {
-        throw new FileUploadException();
-      }
+    try {
+      imageName = "/" + streamer.uploadImage(profileImage);
+    } catch (IOException e) {
+      throw new FileUploadException();
     }
-    
-    service.createUser(passwordEncoder, firstName, lastName, email, isActive, roleIds, imageName);
+
+    Map<String, String> userVerification1 = new HashMap<>();
+    userVerification1.put("id",
+        userAttributes.get("userVerification1[id]"));
+    userVerification1.put("verificationAnswer",
+        userAttributes.get("userVerification1[verificationAnswer]"));
+    userVerification1.put("verificationQuestion",
+        userAttributes.get("userVerification1[verificationQuestion]"));
+
+    Map<String, String> userVerification2 = new HashMap<>();
+    userVerification2.put("id",
+        userAttributes.get("userVerification2[id]"));
+    userVerification2.put("verificationAnswer",
+        userAttributes.get("userVerification2[verificationAnswer]"));
+    userVerification2.put("verificationQuestion",
+        userAttributes.get("userVerification2[verificationQuestion]"));
+
+    Map<String, String> userVerification3 = new HashMap<>();
+    userVerification3.put("id",
+        userAttributes.get("userVerification3[id]"));
+    userVerification3.put("verificationAnswer",
+        userAttributes.get("userVerification3[verificationAnswer]"));
+    userVerification3.put("verificationQuestion",
+        userAttributes.get("userVerification3[verificationQuestion]"));
+
+    service.createUser(passwordEncoder, firstName, lastName, email, isActive,
+        roleIds, userVerification1, userVerification2, userVerification3, imageName);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -77,7 +101,7 @@ class UsersController {
   }
 
   @GetMapping(path = "/")
-  @JsonView(UserViews.Index.class)
+  @JsonView(UserVerificationViews.Index.class)
   public @ResponseBody Iterable<User> 
   index(@RequestParam(required = true, defaultValue = "0") Integer pageNumber, 
           @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
@@ -92,6 +116,7 @@ class UsersController {
       @RequestParam(required = true) String email,
       @RequestParam(required = true) Boolean isActive,
       @RequestParam(required = true) List<Long> roleIds,
+      @RequestParam(required = true) Map<String, String> userAttributes,
       @RequestParam("profile_image") MultipartFile profileImage) {
     String imageName = null;
     if (!profileImage.isEmpty()) {
@@ -101,8 +126,33 @@ class UsersController {
         throw new FileUploadException();
       }
     }
+
+    Map<String, String> userVerification1 = new HashMap<>();
+    userVerification1.put("id",
+        userAttributes.get("userVerification1[id]"));
+    userVerification1.put("verificationAnswer",
+        userAttributes.get("userVerification1[verificationAnswer]"));
+    userVerification1.put("verificationQuestion",
+        userAttributes.get("userVerification1[verificationQuestion]"));
+
+    Map<String, String> userVerification2 = new HashMap<>();
+    userVerification2.put("id",
+        userAttributes.get("userVerification2[id]"));
+    userVerification2.put("verificationAnswer",
+        userAttributes.get("userVerification2[verificationAnswer]"));
+    userVerification2.put("verificationQuestion",
+        userAttributes.get("userVerification2[verificationQuestion]"));
+
+    Map<String, String> userVerification3 = new HashMap<>();
+    userVerification3.put("id",
+        userAttributes.get("userVerification3[id]"));
+    userVerification3.put("verificationAnswer",
+        userAttributes.get("userVerification3[verificationAnswer]"));
+    userVerification3.put("verificationQuestion",
+        userAttributes.get("userVerification3[verificationQuestion]"));
     
-    service.updateUser(id, firstName, lastName, email, isActive, roleIds, imageName);
+    service.updateUser(id, firstName, lastName, email, isActive,
+        roleIds, userVerification1, userVerification2, userVerification3, imageName);
   }
 
   @RequestMapping(value = "/{id}", params = "!profile_image", method = RequestMethod.PUT)
@@ -112,7 +162,34 @@ class UsersController {
       @RequestParam(required = true) String lastName,
       @RequestParam(required = true) String email,
       @RequestParam(required = true) Boolean isActive,
-      @RequestParam(required = true) List<Long> roleIds) {
-    service.updateUser(id, firstName, lastName, email, isActive, roleIds, null);
+      @RequestParam(required = true) List<Long> roleIds,
+      @RequestParam(required = true) Map<String, String> userAttributes
+  ) {
+    Map<String, String> userVerification1 = new HashMap<>();
+    userVerification1.put("id",
+        userAttributes.get("userVerification1[id]"));
+    userVerification1.put("verificationAnswer",
+        userAttributes.get("userVerification1[verificationAnswer]"));
+    userVerification1.put("verificationQuestion",
+        userAttributes.get("userVerification1[verificationQuestion]"));
+
+    Map<String, String> userVerification2 = new HashMap<>();
+    userVerification2.put("id",
+        userAttributes.get("userVerification2[id]"));
+    userVerification2.put("verificationAnswer",
+        userAttributes.get("userVerification2[verificationAnswer]"));
+    userVerification2.put("verificationQuestion",
+        userAttributes.get("userVerification2[verificationQuestion]"));
+
+    Map<String, String> userVerification3 = new HashMap<>();
+    userVerification3.put("id",
+        userAttributes.get("userVerification3[id]"));
+    userVerification3.put("verificationAnswer",
+        userAttributes.get("userVerification3[verificationAnswer]"));
+    userVerification3.put("verificationQuestion",
+        userAttributes.get("userVerification3[verificationQuestion]"));
+
+    service.updateUser(id, firstName, lastName, email, isActive,
+        roleIds, userVerification1, userVerification2, userVerification3, null);
   }
 }

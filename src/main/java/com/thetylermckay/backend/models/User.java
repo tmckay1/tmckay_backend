@@ -85,6 +85,7 @@ public class User {
   @Getter @Setter private ZonedDateTime updatedAt;
   
   @OneToMany(mappedBy = "user")
+  @JsonView(UserViews.Index.class)
   @Getter @Setter private Set<UserVerification> userVerifications;
 
   @JsonView(UserViews.Index.class)

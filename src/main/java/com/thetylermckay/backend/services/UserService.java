@@ -15,6 +15,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -59,6 +60,9 @@ public class UserService implements UserDetailsService {
   @Autowired
   private TokenService tokenService;
 
+  @Autowired
+  private UserVerificationService verificationService;
+
   /**
    * Change the password for the given user and invalidate the token.
    * @param password The new password
@@ -84,11 +88,16 @@ public class UserService implements UserDetailsService {
    * @param email Email of user
    * @param isActive Whether the user is active or not
    * @param roleIds The ids of the roles for this user
+   * @param userVerification1 The verification attributes for the first verification
+   * @param userVerification2 The verification attributes for the second verification
+   * @param userVerification3 The verification attributes for the third verification
    * @param imagePath Name of the profile image to use if present
    */
   @Transactional
   public void createUser(PasswordEncoder passwordEncoder, String firstName, String lastName,
-      String email, boolean isActive, List<Long> roleIds, String imagePath) {
+      String email, boolean isActive, List<Long> roleIds, Map<String, String> userVerification1,
+      Map<String, String> userVerification2, Map<String, String> userVerification3,
+      String imagePath) {
     List<Role> roles = roleService.findAllRolesByIds(roleIds);
     User u = new User();
     u.setFirstName(firstName);
@@ -103,6 +112,9 @@ public class UserService implements UserDetailsService {
     if (imagePath != null) {
       u.setImagePath(imagePath);
     }
+    
+    verificationService.createVerifications(u, userVerification1,
+        userVerification2, userVerification3);
 
     repository.save(u);
   }
@@ -256,11 +268,16 @@ public class UserService implements UserDetailsService {
    * @param email Email of user
    * @param isActive Whether the user is active or not
    * @param roleIds The ids of the roles for this user
+   * @param userVerification1 The verification attributes for the first verification
+   * @param userVerification2 The verification attributes for the second verification
+   * @param userVerification3 The verification attributes for the third verification
    * @param imagePath Name of the profile image to use if present
    */
   @Transactional
   public void updateUser(Long id, String firstName, String lastName,
-      String email, boolean isActive, List<Long> roleIds, String imagePath) {
+      String email, boolean isActive, List<Long> roleIds, Map<String, String> userVerification1,
+      Map<String, String> userVerification2, Map<String, String> userVerification3,
+      String imagePath) {
     Optional<User> user = repository.findById(id);
     if (!user.isPresent()) {
       throw new EntityNotFoundException();
@@ -276,6 +293,9 @@ public class UserService implements UserDetailsService {
     if (imagePath != null) {
       u.setImagePath(imagePath);
     }
+
+    verificationService.updateVerifications(userVerification1,
+        userVerification2, userVerification3);
 
     repository.save(u);
   }

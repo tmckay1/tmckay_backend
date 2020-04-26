@@ -1,5 +1,5 @@
 package com.thetylermckay.backend.views;
 
 public class UserVerificationViews {
-  public interface Index {}
+  public interface Index extends UserViews.Index {}
 }
