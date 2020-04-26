@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -84,7 +86,7 @@ public class User {
   @UpdateTimestamp
   @Getter @Setter private ZonedDateTime updatedAt;
   
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   @JsonView(UserViews.Index.class)
   @Getter @Setter private Set<UserVerification> userVerifications;
 
