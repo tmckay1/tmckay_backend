@@ -3,7 +3,6 @@ package com.thetylermckay.backend.controllers;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.thetylermckay.backend.exceptions.FileUploadException;
 import com.thetylermckay.backend.helpers.ImageStreamer;
-import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.services.RoleService;
 import com.thetylermckay.backend.services.UserService;
 import com.thetylermckay.backend.views.RoleViews;
@@ -102,10 +101,13 @@ class UsersController {
 
   @GetMapping(path = "/")
   @JsonView(UserVerificationViews.Index.class)
-  public @ResponseBody Iterable<User> 
+  public @ResponseBody Map<String, Object>
   index(@RequestParam(required = true, defaultValue = "0") Integer pageNumber, 
           @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
-    return service.findAllUsers(pageNumber, pageSize);
+    Map<String, Object> map = new HashMap<>();
+    map.put("items", service.findAllUsers(pageNumber, pageSize));
+    map.put("totalItems", service.totalUsers());
+    return map;
   }
 
   @RequestMapping(value = "/{id}", params = "profile_image", method = RequestMethod.PUT)

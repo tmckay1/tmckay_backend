@@ -41,6 +41,11 @@ public class UserService implements UserDetailsService {
   public final int maxLoginAttempts = 8;
   
   /**
+   * Max page size allowed.
+   */
+  public final int maxPageLength = 10;
+  
+  /**
    * The default password for newly created users.
    */
   public final String defaultPassword = "ILOVEANGE!";
@@ -137,7 +142,7 @@ public class UserService implements UserDetailsService {
   }
 
   public List<User> findAllUsers(int pageNumber, int pageLength) {
-    PageRequest page = PageRequest.of(pageNumber, pageLength);
+    PageRequest page = PageRequest.of(pageNumber, Math.min(pageLength, maxPageLength));
     return repository.findAll(page).toList();
   }
 
@@ -258,6 +263,14 @@ public class UserService implements UserDetailsService {
           e.getAuthentication().getDetails();
       user.setLastLoginIp(details.getRemoteAddress());
     }
+  }
+  
+  /**
+   * Get the total users in our system.
+   * @return Total
+   */
+  public Long totalUsers() {
+    return repository.count();
   }
   
   /**
