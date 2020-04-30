@@ -13,5 +13,5 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
   Optional<Post> findBySlug(String slug);
 
   @Query("SELECT p FROM Post p WHERE is_active = 1 ORDER BY published_at DESC")
-  Page<Post> findAll(Pageable pageRequest);
+  Page<Post> findAllActive(Pageable pageRequest);
 }

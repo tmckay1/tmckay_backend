@@ -9,14 +9,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 
 @Entity
 @JsonView(PostViews.Index.class)
 public class Post {
 
-  @JsonView(PostViews.Show.class)
   @Getter @Setter private String contents;
 
+  @CreationTimestamp
   @Getter @Setter private ZonedDateTime createdAt;
 
   @Id
@@ -35,5 +38,6 @@ public class Post {
 
   @Getter @Setter private String title;
 
+  @UpdateTimestamp
   @Getter @Setter private ZonedDateTime updatedAt;
 }
