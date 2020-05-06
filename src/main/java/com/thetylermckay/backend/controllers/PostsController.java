@@ -28,12 +28,21 @@ public class PostsController {
   @Autowired
   private PostService service;
 
+  /**
+   * Get the active posts.
+   * @param pageNumber The client page number
+   * @param pageSize The client page size
+   * @return The result
+   */
   @GetMapping(path = "/posts/")
   @JsonView(PostViews.Index.class)
-  public @ResponseBody Iterable<Post> 
+  public @ResponseBody Map<String, Object>  
       allActive(@RequestParam(required = true, defaultValue = "0") Integer pageNumber, 
               @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
-    return service.findAllActivePosts(pageNumber, pageSize);
+    Map<String, Object> map = new HashMap<>();
+    map.put("items", service.findAllActivePosts(pageNumber, pageSize));
+    map.put("totalItems", service.totalActivePosts());
+    return map;
   }
 
   /**

@@ -14,4 +14,6 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
   @Query("SELECT p FROM Post p WHERE is_active = 1 ORDER BY published_at DESC")
   Page<Post> findAllActive(Pageable pageRequest);
+  
+  Long countByIsActive(boolean active);
 }

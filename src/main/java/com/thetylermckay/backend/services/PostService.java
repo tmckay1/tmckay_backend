@@ -100,6 +100,10 @@ public class PostService {
     return repository.count();
   }
   
+  public Long totalActivePosts() {
+    return repository.countByIsActive(true);
+  }
+  
   /**
    * Create the given user with the following attributes.
    * @param id Post id
