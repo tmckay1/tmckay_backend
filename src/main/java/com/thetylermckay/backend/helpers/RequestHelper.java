@@ -10,10 +10,28 @@ public class RequestHelper {
    * @return IP Address
    */
   public static String getClientIP(HttpServletRequest request) {
-    String xfHeader = request.getHeader("X-Forwarded-For");
-    if (xfHeader == null) {
-      return request.getRemoteAddr();
+    String remoteAddr = "";
+    if (request != null) {
+      remoteAddr = request.getHeader("X-FORWARDED-FOR");
+      if (remoteAddr == null || "".equals(remoteAddr)) {
+        remoteAddr = request.getRemoteAddr();
+      }
     }
-    return xfHeader.split(",")[0];
+
+    return remoteAddr;
+  }
+  
+  /**
+   * Return the User Agent for the given request.
+   * @param request Request to get the user agent from
+   * @return User Agent
+   */
+  public static String getClientUserAgent(HttpServletRequest request) {
+    String remoteAddr = "";
+    if (request != null) {
+      remoteAddr = request.getHeader("User-Agent");
+    }
+
+    return remoteAddr;
   }
 }

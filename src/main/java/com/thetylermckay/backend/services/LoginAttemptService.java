@@ -19,7 +19,7 @@ public class LoginAttemptService {
    * Log a successful login attempt.
    * @param e The successful login event
    */
-  public void loginSucceeded(AuthenticationSuccessEvent e) {
+  public void loginSucceeded(AuthenticationSuccessEvent e, String ipAddress) {
     // Sometimes we get a user object, othertimes we get a user name
     // depends on the path
     Object principal = e.getAuthentication().getPrincipal();
@@ -33,7 +33,7 @@ public class LoginAttemptService {
     // username and another time with the client id.
     // TODO: Investigate a permanent fix
     if (!username.equals(jwtProperties.getClientId())) {
-      userService.loginSucceeded(username, e);
+      userService.loginSucceeded(username, ipAddress);
     }
   }
 
@@ -41,10 +41,11 @@ public class LoginAttemptService {
    * Log an unsuccessful login attempt.
    * @param e The unsuccessful login event
    */
-  public void loginFailed(AuthenticationFailureBadCredentialsEvent e) {
+  public void loginFailed(AuthenticationFailureBadCredentialsEvent e, String ipAddress,
+      String userAgent) {
     String username = (String) e.getAuthentication().getPrincipal();
     if (!username.equals("access-token")) {
-      userService.loginFailed(username);
+      userService.loginFailed(username, ipAddress, userAgent);
     }
   }
 }

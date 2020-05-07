@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -49,6 +47,9 @@ public class UserService implements UserDetailsService {
    * The default password for newly created users.
    */
   public final String defaultPassword = "ILOVEANGE!";
+
+  @Autowired
+  private FailedLoginAttemptService failedLoginService;
 
   @Autowired
   private UserRepository repository;
@@ -209,12 +210,12 @@ public class UserService implements UserDetailsService {
   /**
    * When a successful login occurs, reset the failed attempts and set the IP address.
    * @param username The username of the user who logged in
-   * @param e The successful authentication event
+   * @param ipAddress The client ip
    */
-  public void loginSucceeded(String username, AuthenticationSuccessEvent e) {
+  public void loginSucceeded(String username, String ipAddress) {
     User user = repository.findByEmail(username).get();
     user.setFailedAttempts(0);
-    this.setLoginIp(user, e);
+    user.setLastLoginIp(ipAddress);
     repository.save(user);
   }
   
@@ -222,9 +223,10 @@ public class UserService implements UserDetailsService {
    * Increment the failed login attempts when a user fails to login.
    * @param username The username of the user that failed to login
    */
-  public void loginFailed(String username) {
+  public void loginFailed(String username, String ipAddress, String userAgent) {
     User user = repository.findByEmail(username).get();
     user.setFailedAttempts(1 + user.getFailedAttempts());
+    failedLoginService.logFailedAttempt(user, ipAddress, userAgent);
     repository.save(user);
   }
   
@@ -249,19 +251,6 @@ public class UserService implements UserDetailsService {
     if (user.isPresent() && !user.get().getIsVerified()) {
       String token = tokenService.generateSignUpToken(user.get());
       signUpMailer.sendSignUpEmail(user.get(), token);
-    }
-  }
-
-  /**
-   * Set the last successful login ip for this user if we can get the IP.
-   * @param user The user to update the login ip for
-   * @param e The authentication event that has more info about the login
-   */
-  private void setLoginIp(User user, AuthenticationSuccessEvent e) {
-    if (e.getAuthentication().getDetails() instanceof WebAuthenticationDetails) {
-      WebAuthenticationDetails details = (WebAuthenticationDetails)
-          e.getAuthentication().getDetails();
-      user.setLastLoginIp(details.getRemoteAddress());
     }
   }
   
