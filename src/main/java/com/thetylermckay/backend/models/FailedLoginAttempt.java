@@ -1,5 +1,7 @@
 package com.thetylermckay.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.thetylermckay.backend.views.FailedLoginAttemptViews;
 import java.time.ZonedDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,13 +18,16 @@ import org.hibernate.annotations.CreationTimestamp;
 public class FailedLoginAttempt {
 
   @CreationTimestamp
+  @JsonView(FailedLoginAttemptViews.Index.class)
   @Getter @Setter private ZonedDateTime createdAt;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonView(FailedLoginAttemptViews.Index.class)
   @Getter @Setter private Long id;
 
   @Column(columnDefinition = "varchar(15)")
+  @JsonView(FailedLoginAttemptViews.Index.class)
   @Getter @Setter private String ipAddress;
 
   @ManyToOne
@@ -30,5 +35,11 @@ public class FailedLoginAttempt {
   @Getter @Setter private User user;
 
   @Column(columnDefinition = "varchar(250)")
+  @JsonView(FailedLoginAttemptViews.Index.class)
   @Getter @Setter private String userAgent;
+
+  @JsonView(FailedLoginAttemptViews.Index.class)
+  public String userEmail() {
+    return this.user.getEmail();
+  }
 }
