@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.thetylermckay.backend.models.Post;
-import com.thetylermckay.backend.services.IPostService;
+import com.thetylermckay.backend.services.PostService;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
@@ -29,7 +29,7 @@ public class PostsControllerTest {
   private MockMvc mvc;
 
   @MockBean
-  private IPostService service;
+  private PostService service;
 
   /**
    * Setup configuration before each test.

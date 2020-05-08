@@ -11,6 +11,7 @@ import com.thetylermckay.backend.models.Role;
 import com.thetylermckay.backend.models.Token;
 import com.thetylermckay.backend.models.User;
 import com.thetylermckay.backend.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +32,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserService implements UserDetailsService {
   
   /**
@@ -81,6 +83,7 @@ public class UserService implements UserDetailsService {
     if (!user.getIsVerified()) {
       throw new UserUnverifiedException();
     }
+    log.info("Changing user password for {}", user.getEmail());
     user.setPassword(passwordEncoder.encode(password));
     repository.save(user);
     tokenService.invalidateToken(t);
@@ -139,6 +142,7 @@ public class UserService implements UserDetailsService {
     if (!currentUser.isPresent() || currentUser.get().getId() == id) {
       throw new CannotModifySelfException();
     }
+    log.info("User {} deleting user {}", currentUser.get().getEmail(), user.get().getEmail());
     repository.delete(user.get());
   }
 
@@ -237,6 +241,7 @@ public class UserService implements UserDetailsService {
   public void resetPassword(String username) {
     Optional<User> user = repository.findByEmail(username);
     if (user.isPresent() && user.get().getIsVerified()) {
+      log.info("resetting password for {}", username);
       String token = tokenService.generateResetPasswordToken(user.get());
       resetPasswordMailer.sendResetPasswordEmail(user.get(), token);
     }
@@ -249,6 +254,7 @@ public class UserService implements UserDetailsService {
   public void signUp(String username) {
     Optional<User> user = repository.findByEmail(username);
     if (user.isPresent() && !user.get().getIsVerified()) {
+      log.info("signing user up {}", username);
       String token = tokenService.generateSignUpToken(user.get());
       signUpMailer.sendSignUpEmail(user.get(), token);
     }
