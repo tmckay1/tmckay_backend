@@ -1,6 +1,6 @@
 package com.thetylermckay.backend.config;
 
-import java.util.List;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,7 +54,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
   @Override
   public void configure(final AuthorizationServerEndpointsConfigurer endpoints) {
     TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-    tokenEnhancerChain.setTokenEnhancers(List.of(tokenEnhancer, accessTokenConverter()));
+    tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer, accessTokenConverter()));
     endpoints
         .tokenStore(tokenStore)
         .reuseRefreshTokens(false)
