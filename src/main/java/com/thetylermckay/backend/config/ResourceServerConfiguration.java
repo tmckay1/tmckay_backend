@@ -36,7 +36,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         .antMatchers("/api/posts/**")
             .hasAnyAuthority("MANAGE_POSTS", "ADMIN")
         .antMatchers("/api/**", "/api/auth/revoke_token").authenticated()
-        .anyRequest().authenticated()
+        .anyRequest().permitAll()
         .and().exceptionHandling()
             .authenticationEntryPoint(customAuthenticationEntryPoint)
             .accessDeniedHandler(accessDeniedHandler());
