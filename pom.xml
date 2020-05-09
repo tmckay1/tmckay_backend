@@ -25,6 +25,12 @@
 		</dependency>
 
 		<dependency>
+		  <groupId>com.bugsnag</groupId>
+		  <version>[3.0,4.0)</version>
+		  <artifactId>bugsnag-spring</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
