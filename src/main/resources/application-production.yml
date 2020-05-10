@@ -19,7 +19,8 @@ server:
   hosts:
     - http://thetylermckay.com
     - https://thetylermckay.com
-  port: 8443
+  is_prod: true
+  port: 443
   ssl:
     key-store: classpath:keystore.p12
     key-store-password: tM031293

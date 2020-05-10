@@ -34,7 +34,7 @@ public class PostsController {
    * @param pageSize The client page size
    * @return The result
    */
-  @GetMapping(path = "/posts/")
+  @GetMapping(path = "/view_posts/")
   @JsonView(PostViews.Index.class)
   public @ResponseBody Map<String, Object>  
       allActive(@RequestParam(required = true, defaultValue = "0") Integer pageNumber, 
@@ -95,7 +95,7 @@ public class PostsController {
     return map;
   }
 
-  @GetMapping(path = "/posts/{slug}")
+  @GetMapping(path = "/view_posts/{slug}")
   @JsonView(PostViews.Show.class)
   public @ResponseBody Post show(@PathVariable("slug") String slug) {
     return service.findPostBySlug(slug);

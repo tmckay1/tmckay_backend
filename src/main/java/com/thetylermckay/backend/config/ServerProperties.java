@@ -14,5 +14,7 @@ public class ServerProperties {
 
   @Getter @Setter private List<String> hosts;
 
+  @Getter @Setter private boolean isProd;
+
   @Getter @Setter private String resourcePath;
 }

@@ -18,7 +18,9 @@ server:
   host: http://localhost:3000
   hosts:
     - http://localhost:3000
-    - http://10.0.0.14:3000  resource_path: src/main/resources
+    - http://10.0.0.14:3000
+  is_prod: false
+  resource_path: src/main/resources
   
 spring:
   datasource:
@@ -38,6 +40,10 @@ spring:
           writetimeout: 5000
           starttls:
             enable: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
   servlet:    multipart:      max-file-size: 5MB
 
   jpa:
