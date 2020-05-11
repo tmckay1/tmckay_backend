@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class RedirectOnResourceNotFoundException {
 
   /**
@@ -19,7 +19,7 @@ public class RedirectOnResourceNotFoundException {
    * @param redirectAttributes attributes to add to redirect response
    * @return
    */
-  @ExceptionHandler(value = NoHandlerFoundException.class)
+  // @ExceptionHandler(value = NoHandlerFoundException.class)
   public Object handleStaticResourceNotFound(final NoHandlerFoundException ex,
       HttpServletRequest req, RedirectAttributes redirectAttributes) {
     if (req.getRequestURI().startsWith("/api")) {

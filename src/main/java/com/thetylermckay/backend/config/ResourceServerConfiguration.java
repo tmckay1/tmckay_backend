@@ -30,7 +30,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
   @Override
   public void configure(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable().authorizeRequests()
-        .antMatchers("/posts/**", "/images/**", "/oauth/token", "/api/auth/**").permitAll()
+        .antMatchers("/view_posts/**", "/images/**", "/oauth/token", "/api/auth/**").permitAll()
         .antMatchers("/api/users/**", "/api/roles/**", "/api/privileges/**")
             .hasAnyAuthority("MANAGE_USERS", "ADMIN")
         .antMatchers("/api/posts/**")
