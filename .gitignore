@@ -30,5 +30,8 @@ build/
 ### VS Code ###
 .vscode/
 
+### Resources ###
+src/main/resources/images
+
 ### Logs ###
 logs/
