@@ -52,7 +52,6 @@ public class PostsController {
    * @param slug Post slug
    * @param contents Post contents
    * @param isActive Post is active or not
-   * @param image Post image
    */
   @RequestMapping(value = "/api/posts/", params = "image", method = RequestMethod.POST)
   @ResponseBody
@@ -60,16 +59,15 @@ public class PostsController {
       @RequestParam(required = true) String summary,
       @RequestParam(required = true) String slug,
       @RequestParam(required = true) String contents,
-      @RequestParam(required = true) Boolean isActive,
-      @RequestParam(required = true) MultipartFile image) {
-    String imageName = null;
-    try {
-      imageName = "/" + streamer.uploadImage(image);
-    } catch (IOException e) {
-      throw new FileUploadException();
-    }
+      @RequestParam(required = true) Boolean isActive) {
+    // String imageName = null;
+    // try {
+    //   imageName = "/" + streamer.uploadImage(image);
+    // } catch (IOException e) {
+    //   throw new FileUploadException();
+    // }
 
-    service.createPost(title, summary, slug, contents, isActive, imageName);
+    service.createPost(title, summary, slug, contents, isActive, null);
   }
 
   @RequestMapping(value = "/api/posts/{id}", method = RequestMethod.DELETE)
