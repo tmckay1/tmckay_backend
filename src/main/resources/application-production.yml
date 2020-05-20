@@ -15,7 +15,7 @@ logging:
     com.thetylermckay.backend: DEBUG
 
 server:
-  host: http://thetylermckay.com
+  host: https://thetylermckay.com
   hosts:
     - http://thetylermckay.com
     - https://thetylermckay.com
