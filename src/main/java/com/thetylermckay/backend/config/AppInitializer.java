@@ -1,31 +1,41 @@
 package com.thetylermckay.backend.config;
 
-import java.io.File;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
 @Configuration
-public class AppInitializer implements WebApplicationInitializer { 
-  @Override 
-  public void onStartup(ServletContext servletContext) { 
-    final AnnotationConfigWebApplicationContext appContext =
-        new AnnotationConfigWebApplicationContext(); 
+public class AppInitializer implements WebApplicationInitializer {
+
+  @Autowired
+  private ServerProperties serverProperties;
+
+  private int maxUploadSize = 5 * 1024 * 1024; 
   
-    final ServletRegistration.Dynamic registration =
-        servletContext.addServlet("dispatcher", new DispatcherServlet(appContext)); 
-    registration.setLoadOnStartup(1); 
-    registration.addMapping("/"); 
-  
-    File uploadDirectory = new File(System.getProperty("java.io.tmpdir"));                  
-    MultipartConfigElement multipartConfigElement =
-        new MultipartConfigElement(uploadDirectory.getAbsolutePath(), 
-            100000, 100000 * 2, 100000 / 2); 
-  
-    registration.setMultipartConfig(multipartConfigElement);
+  @Bean
+  public StandardServletMultipartResolver multipartResolver() {
+    return new StandardServletMultipartResolver();
+  }
+
+  @Override
+  public void onStartup(ServletContext sc) throws ServletException {
+    ServletRegistration.Dynamic appServlet = sc.addServlet("mvc",
+        new DispatcherServlet(new GenericWebApplicationContext()));
+
+    appServlet.setLoadOnStartup(1);
+     
+    String tmp = String.format("%s/tmp", serverProperties.getResourcePath());
+    MultipartConfigElement multipartConfigElement = new MultipartConfigElement(tmp, 
+        maxUploadSize, maxUploadSize * 2, maxUploadSize / 2);
+     
+    appServlet.setMultipartConfig(multipartConfigElement);
   }
 }

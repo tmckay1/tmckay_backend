@@ -49,22 +49,20 @@ class UsersController {
     return map;
   }
 
-  @RequestMapping(value = "/", params = "profile_image", method = RequestMethod.POST)
+  @RequestMapping(value = "/", method = RequestMethod.POST)
   @ResponseBody
   public void create(@RequestParam(required = true) String firstName,
       @RequestParam(required = true) String lastName,
       @RequestParam(required = true) String email,
       @RequestParam(required = true) Boolean isActive,
       @RequestParam(required = true) List<Long> roleIds,
-      @RequestParam(required = true) Map<String, String> userAttributes,
-      @RequestParam("profile_image") MultipartFile profileImage) {
-    String imageName = null;
-    try {
-      imageName = "/" + streamer.uploadImage(profileImage);
-    } catch (IOException e) {
-      throw new FileUploadException();
-    }
-
+      @RequestParam(required = true) Map<String, String> userAttributes) {
+    // String imageName = null;
+    // try {
+    //   imageName = "/" + streamer.uploadImage(profileImage);
+    // } catch (IOException e) {
+    //   throw new FileUploadException();
+    // }
     Map<String, String> userVerification1 = new HashMap<>();
     userVerification1.put("id",
         userAttributes.get("userVerification1[id]"));
@@ -90,7 +88,7 @@ class UsersController {
         userAttributes.get("userVerification3[verificationQuestion]"));
 
     service.createUser(passwordEncoder, firstName, lastName, email, isActive,
-        roleIds, userVerification1, userVerification2, userVerification3, imageName);
+        roleIds, userVerification1, userVerification2, userVerification3, null);
   }
 
   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

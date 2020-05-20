@@ -27,7 +27,7 @@ server:
     key-store-type: pkcs12
     key-alias: tomcat
     key-password: tM031293
-  resource_path: src/main/resources
+  resource_path: resources
   
 spring:
   datasource:
@@ -50,7 +50,11 @@ spring:
             enable: true
   servlet:
     multipart:
-      max-file-size: 5MB
+      max-file-size: 10MB
+      file-size-threshold: 5MB
+      location: resources/tmp
+      max-request-size: 5MB
+      enabled: true
 
   jpa:
     hibernate:
